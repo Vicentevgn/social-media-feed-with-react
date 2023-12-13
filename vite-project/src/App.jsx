@@ -1,21 +1,27 @@
 import { useState } from 'react'
-import { Post } from './Post'
 import './global.css'
+import styles from './App.module.css'
+
 import { Header } from './Components/Header'
+import { Sidebar } from './Components/Sidebar'
+import { Post } from './Components/Post'
 
 export function App() {
   return (
     <div>
       <Header />
-
-      <Post 
-        author="Vicente Garcia"
-        content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptate."
-      />
-      <Post 
-        author="Bruno Gay"
-        content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptate."
-      />
+      
+      <div className={styles.wrapper}>
+        <aside>
+          <Sidebar />
+        </aside>
+        <main>
+          <Post 
+          />
+          <Post 
+          />
+        </main>
+      </div>
     </div>
   )
 }
