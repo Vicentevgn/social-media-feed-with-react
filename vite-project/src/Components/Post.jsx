@@ -1,43 +1,62 @@
 import styles from './Post.module.css'
+import { format } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale/pt-BR'
 import { Comment } from './Comment'
 import { Avatar } from './Avatar'
+import { useState } from 'react';
 
-export function Post() {
+export function Post( { author, publishedAt, content} ) {
+    const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", { locale: ptBR});
+    const publishedDateToNow = formatDistanceToNow(publishedAt, { locale: ptBR, addSuffix: true });
+
+    const [comments, setComments] = useState([
+        'Post muito bacana!'
+    ]);
+
+    const [newCommentText, setNewCommentText] = useState('');
+
+    function handleCreateComment(event) {
+        event.preventDefault();
+        setComments([...comments, newCommentText])
+        setNewCommentText('');
+    }
+
+    function handleNewCommentChange(event) {
+        setNewCommentText(event.target.value);
+    }
+
     return (
         <article className={styles.post}>
             <header>
                 <div className={styles.author}>
-                    <Avatar src="https://github.com/Vicentevgn.png" />
+                    <Avatar src={author.avatarUrl} />
                     <div 
                         className={styles.authorInfo}>
-                        <strong>Vicente Garcia</strong>
-                        <span>Web Developer</span>
+                        <strong>{author.name}</strong>
+                        <span>{author.role}</span>
                     </div>
                 </div>
-                <time 
-                    title='13 de dezembro as 15:30' 
-                    dateTime='2023-12-13'>
-                    Publicado há 1h
+
+                <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>
+                    {publishedDateToNow}
                 </time>                
             </header>
 
             <div className={styles.content}>
-                <p> Fala galera up</p>
-                <p> alguem avisa o rauber q nao é legal da o cu pro cavalo do cassio bonotto </p>
-                <p> a mamae do lacerda se alimenta de pica</p>
-                <p>
-                    <a href="">#uhu </a>
-                    <a href="">#semCá </a>
-                    <a href="">#arvoreBlauBr </a>
-                </p>
+                {content.map(line => {
+                    if(line.type === 'text') {
+                        return <p key={line.content}>{line.content}</p>;
+                    } else if(line.type === 'link'){
+                        return <p key={line.content}><a href="#">{line.content}</a></p>
+                    }
+                })}
             </div>
 
-            <form className={styles.commentForm}>
+            <form onSubmit={handleCreateComment} className={styles.commentForm}>
                 <strong>Deixe seu feedback</strong>
 
-                <textarea
-                    placeholder='Deixe um comentário'
-                />
+                <textarea name='comment' onChange={handleNewCommentChange} value={newCommentText} placeholder='Deixe um comentário' />
 
                 <footer>
                     <button type="submit">Publicar</button>                
@@ -45,9 +64,9 @@ export function Post() {
             </form>
 
             <div className={styles.commentList}>
-                <Comment />
-                <Comment />
-                <Comment />
+                {comments.map(comment => {
+                    return <Comment key={comment} content={comment} />
+                })}
             </div>
         </article>
     )
