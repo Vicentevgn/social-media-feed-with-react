@@ -23,7 +23,16 @@ export function Post( { author, publishedAt, content} ) {
     }
 
     function handleNewCommentChange(event) {
+        event.target.setCustomValidity('');
         setNewCommentText(event.target.value);
+    }
+
+    function deleteComment(comment){
+        setComments(comments.filter(c => c !== comment));
+    }
+
+    function handleNewCommentInvalid(event){
+        event.target.setCustomValidity('O comentário não pode estar vazio');
     }
 
     return (
@@ -56,16 +65,23 @@ export function Post( { author, publishedAt, content} ) {
             <form onSubmit={handleCreateComment} className={styles.commentForm}>
                 <strong>Deixe seu feedback</strong>
 
-                <textarea name='comment' onChange={handleNewCommentChange} value={newCommentText} placeholder='Deixe um comentário' />
+                <textarea 
+                    name='comment' 
+                    onChange={handleNewCommentChange} 
+                    value={newCommentText} 
+                    placeholder='Deixe um comentário'
+                    onInvalid={handleNewCommentInvalid}
+                    required 
+                />
 
                 <footer>
-                    <button type="submit">Publicar</button>                
+                    <button type="submit" disabled={newCommentText.length === 0} >Publicar</button>                
                 </footer>
             </form>
 
             <div className={styles.commentList}>
                 {comments.map(comment => {
-                    return <Comment key={comment} content={comment} />
+                    return <Comment key={comment} content={comment} onDeleteComment={deleteComment} />
                 })}
             </div>
         </article>
